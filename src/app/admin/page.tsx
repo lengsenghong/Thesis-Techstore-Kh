@@ -197,10 +197,10 @@ export default function AdminDashboard() {
     staleTime: 30_000,
   });
 
-  // Fetch real categories (includes productCount per your Category type)
+// Fetch real categories (includes productCount per your Category type)
   const { data: categoriesPage } = useQuery({
     queryKey: ["categories","admin-dashboard"],
-    queryFn: () => categoriesApi.list({ limit: 50 }),
+    queryFn: () => categoriesApi.list(),
     staleTime: 60_000,
   });
 

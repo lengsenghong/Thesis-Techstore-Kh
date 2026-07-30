@@ -8,22 +8,25 @@ const nextConfig = {
       { protocol: "https", hostname: "**.amazonaws.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "**.manus.space" },
+      { protocol: "https", hostname: "**.onrender.com" },
       // Allow locally-uploaded images served by Spring Boot (development)
       { protocol: "http", hostname: "localhost" },
       { protocol: "http", hostname: "127.0.0.1" },
     ],
   },
-  // Proxy /api and /uploads calls to the Spring Boot backend during development
+  // Proxy /api and /uploads calls to the Spring Boot backend.
+  // BACKEND_URL is server-side only (set on Render); defaults to localhost for dev.
   async rewrites() {
+    const backend = process.env.BACKEND_URL || "http://localhost:8081";
     return [
       {
         source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081"}/api/:path*`,
+        destination: `${backend}/api/:path*`,
       },
       // Proxy uploaded product images to Spring Boot
       {
         source: "/uploads/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081"}/uploads/:path*`,
+        destination: `${backend}/uploads/:path*`,
       },
     ];
   },

@@ -95,7 +95,7 @@ export default function AdminReviewsPage() {
                       ))}
                     </div>
                     {/* FIX: backend returns isVerifiedPurchase */}
-                    {(review.isVerifiedPurchase ?? review.isVerified) && (
+                    {review.isVerifiedPurchase && (
                       <span className="text-xs text-green-600 flex items-center gap-0.5">
                         <Shield className="w-3 h-3" /> Verified
                       </span>
@@ -113,11 +113,9 @@ export default function AdminReviewsPage() {
                   {review.title && (
                     <p className="font-semibold text-sm mb-1">{review.title}</p>
                   )}
-
-                  {/* FIX: backend returns `body`, not `comment` */}
-                  {(review.body ?? review.comment) && (
+{review.body && (
                     <p className="text-sm text-muted-foreground line-clamp-3">
-                      {review.body ?? review.comment}
+                      {review.body}
                     </p>
                   )}
 
