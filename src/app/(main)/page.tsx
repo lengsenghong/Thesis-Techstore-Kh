@@ -18,14 +18,14 @@ import ProductCard from "@/components/product/ProductCard";
 const BRANDS = ["ROCCAT","MSI","RAZER","Thermaltake","ADATA","HP","GIGABYTE","ASUS","Corsair","Intel","AMD","NVIDIA"];
 
 const CATEGORIES = [
-  { label:"Laptops",     href:"/products?categorySlug=laptops",    icon:Laptop,     color:"from-violet-500/20 to-purple-600/20 hover:from-violet-500/30 hover:to-purple-600/30", accent:"text-violet-400" },
-  { label:"Monitors",    href:"/products?categorySlug=monitors",   icon:Monitor,    color:"from-blue-500/20 to-cyan-600/20 hover:from-blue-500/30 hover:to-cyan-600/30",         accent:"text-cyan-400" },
-  { label:"Components",  href:"/products?categorySlug=components", icon:Cpu,        color:"from-orange-500/20 to-red-600/20 hover:from-orange-500/30 hover:to-red-600/30",       accent:"text-orange-400" },
-  { label:"Gaming",      href:"/products?badge=HOT",               icon:Gamepad2,   color:"from-green-500/20 to-emerald-600/20 hover:from-green-500/30 hover:to-emerald-600/30", accent:"text-emerald-400" },
-  { label:"Peripherals", href:"/products?categorySlug=peripherals",icon:Keyboard,   color:"from-pink-500/20 to-rose-600/20 hover:from-pink-500/30 hover:to-rose-600/30",         accent:"text-pink-400" },
-  { label:"Deals",       href:"/products?badge=SALE",              icon:Tag,        color:"from-yellow-500/20 to-amber-600/20 hover:from-yellow-500/30 hover:to-amber-600/30",   accent:"text-yellow-400" },
-  { label:"New",         href:"/products?badge=NEW",               icon:Zap,        color:"from-teal-500/20 to-sky-600/20 hover:from-teal-500/30 hover:to-sky-600/30",           accent:"text-teal-400" },
-  { label:"Audio",       href:"/products?categorySlug=audio",      icon:Headphones, color:"from-indigo-500/20 to-violet-600/20 hover:from-indigo-500/30 hover:to-violet-600/30", accent:"text-indigo-400" },
+  { label:"Laptops",     href:"/products?categorySlug=laptops",    icon:Laptop,     color:"from-violet-50 to-purple-100 hover:from-violet-100 hover:to-purple-200 border-violet-200/60",  accent:"text-violet-600" },
+  { label:"Monitors",    href:"/products?categorySlug=monitors",   icon:Monitor,    color:"from-blue-50 to-cyan-100 hover:from-blue-100 hover:to-cyan-200 border-cyan-200/60",             accent:"text-cyan-600" },
+  { label:"Components",  href:"/products?categorySlug=components", icon:Cpu,        color:"from-orange-50 to-red-100 hover:from-orange-100 hover:to-red-200 border-orange-200/60",         accent:"text-orange-600" },
+  { label:"Gaming",      href:"/products?badge=HOT",               icon:Gamepad2,   color:"from-green-50 to-emerald-100 hover:from-green-100 hover:to-emerald-200 border-emerald-200/60",  accent:"text-emerald-600" },
+  { label:"Peripherals", href:"/products?categorySlug=peripherals",icon:Keyboard,   color:"from-pink-50 to-rose-100 hover:from-pink-100 hover:to-rose-200 border-pink-200/60",             accent:"text-pink-600" },
+  { label:"Deals",       href:"/products?badge=SALE",              icon:Tag,        color:"from-yellow-50 to-amber-100 hover:from-yellow-100 hover:to-amber-200 border-amber-200/60",      accent:"text-amber-600" },
+  { label:"New",         href:"/products?badge=NEW",               icon:Zap,        color:"from-teal-50 to-sky-100 hover:from-teal-100 hover:to-sky-200 border-teal-200/60",              accent:"text-teal-600" },
+  { label:"Audio",       href:"/products?categorySlug=audio",      icon:Headphones, color:"from-indigo-50 to-violet-100 hover:from-indigo-100 hover:to-violet-200 border-indigo-200/60",   accent:"text-indigo-600" },
 ];
 
 const TESTIMONIALS = [
@@ -35,18 +35,17 @@ const TESTIMONIALS = [
 ];
 
 const STATIC_SLIDES: Banner[] = [
-  { id:-1, title:"SCORE A BONUS GAMING MONITOR", subtitle:"Limited Time Offer",     imageUrl:"", linkUrl:"/products?badge=FEATURED",        linkLabel:"Shop Now", sortOrder:0, isActive:true, createdAt:"", updatedAt:"" },
-  { id:-2, title:"MSI TITAN GT77 HX",             subtitle:"Flagship Gaming Laptop", imageUrl:"", linkUrl:"/products?categorySlug=laptops", linkLabel:"Explore",  sortOrder:1, isActive:true, createdAt:"", updatedAt:"" },
+  { id:-1, title:"SUMMER SALE UP TO 40%",       subtitle:"MSI New Arrival",        imageUrl:"", linkUrl:"/products?badge=FEATURED", linkLabel:"Browse All", sortOrder:0, isActive:true, createdAt:"", updatedAt:"" },
+  { id:-2, title:"THE BEST GAMING LAPTOPS 2025", subtitle:"Flagship Gaming Lineup", imageUrl:"", linkUrl:"/products?categorySlug=laptops", linkLabel:"Explore", sortOrder:1, isActive:true, createdAt:"", updatedAt:"" },
 ];
 
 const TRUST_BADGES = [
-  { icon:Truck,          title:"Free Delivery",   desc:"On orders over $50" },
-  { icon:Shield,         title:"2-Year Warranty", desc:"On all products" },
-  { icon:RefreshCw,      title:"Easy Returns",    desc:"30-day hassle-free returns" },
+  { icon:Truck,          title:"Free Delivery",   desc:"On orders over $500" },
+  { icon:Shield,         title:"12-Month Warranty", desc:"On all products" },
+  { icon:RefreshCw,      title:"Easy Returns",    desc:"7-day hassle-free returns" },
   { icon:HeadphonesIcon, title:"24/7 Support",    desc:"Expert tech assistance" },
 ];
 
-// ── Countdown hook ────────────────────────────────────────────────────────────
 function useCountdown(h = 24) {
   const end = useRef(Date.now() + h * 3_600_000);
   const [r, setR] = useState(end.current - Date.now());
@@ -64,13 +63,12 @@ function useCountdown(h = 24) {
 function CountdownDigit({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className="relative w-14 h-14 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent" />
-        <span className="text-2xl font-black text-white tabular-nums tracking-tighter z-10">
+      <div className="w-14 h-14 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+        <span className="text-2xl font-black text-primary tabular-nums tracking-tighter">
           {String(value).padStart(2, "0")}
         </span>
       </div>
-      <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.15em]">{label}</span>
+      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.15em]">{label}</span>
     </div>
   );
 }
@@ -89,29 +87,28 @@ function FlashCountdown() {
   );
 }
 
-// ── Product scroll section ────────────────────────────────────────────────────
 function ProductScrollSection({
-  title, eyebrow, products, isLoading, viewAllHref, flashSale = false, darkBg = false, mascotKey,
+  title, eyebrow, products, isLoading, viewAllHref, flashSale = false, mascotKey,
 }: {
   title: string; eyebrow?: string; products: Product[]; isLoading: boolean;
-  viewAllHref: string; flashSale?: boolean; darkBg?: boolean; mascotKey?: string;
+  viewAllHref: string; flashSale?: boolean; mascotKey?: string;
 }) {
   const { addToCart } = useCart();
   const countdown = useCountdown(8);
 
   return (
-    <section data-mascot={mascotKey} className={`py-12 ${darkBg ? "bg-zinc-950/60" : ""}`}>
+    <section data-mascot={mascotKey} className="py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-7 gap-4">
           <div className="flex flex-col gap-1">
             {eyebrow && <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary/80">{eyebrow}</span>}
             <div className="flex items-center gap-3">
-              {flashSale && <Zap className="w-5 h-5 text-orange-400 fill-orange-400" />}
+              {flashSale && <Zap className="w-5 h-5 text-orange-500 fill-orange-500" />}
               <h2 className="text-2xl font-black text-foreground tracking-tight">{title}</h2>
               {flashSale && (
-                <div className="flex items-center gap-1.5 rounded-full bg-orange-500/15 border border-orange-500/30 px-3 py-1">
-                  <Clock className="w-3 h-3 text-orange-400" />
-                  <span className="text-xs font-mono font-bold text-orange-400">
+                <div className="flex items-center gap-1.5 rounded-full bg-orange-50 border border-orange-200 px-3 py-1">
+                  <Clock className="w-3 h-3 text-orange-500" />
+                  <span className="text-xs font-mono font-bold text-orange-600">
                     {String(countdown.h).padStart(2,"0")}:{String(countdown.m).padStart(2,"0")}:{String(countdown.s).padStart(2,"0")}
                   </span>
                 </div>
@@ -126,7 +123,7 @@ function ProductScrollSection({
         {isLoading ? (
           <div className="flex gap-4 overflow-x-hidden pb-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="w-52 flex-shrink-0 rounded-2xl bg-white/5 animate-pulse h-80" />
+              <div key={i} className="w-52 flex-shrink-0 rounded-2xl bg-secondary animate-pulse h-80" />
             ))}
           </div>
         ) : products.length === 0 ? (
@@ -139,10 +136,10 @@ function ProductScrollSection({
                 <button
                   onClick={e => {
                     e.preventDefault();
-                    addToCart(p, 1);   // ✅ correct signature: (product, quantity)
+                    addToCart(p, 1);
                     toast.success(`${p.name.slice(0, 28)}… added`);
                   }}
-                  className="absolute bottom-[52px] left-2 right-2 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xl shadow-primary/20"
+                  className="absolute bottom-[52px] left-2 right-2 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200 flex items-center justify-center gap-1.5 shadow-lg shadow-primary/20"
                 >
                   <ShoppingCart className="w-3.5 h-3.5" />Add to Cart
                 </button>
@@ -155,7 +152,6 @@ function ProductScrollSection({
   );
 }
 
-// ── Tabbed scroll section ─────────────────────────────────────────────────────
 function TabbedScrollSection({
   title, eyebrow, tabs, allProducts, isLoading, mascotKey,
 }: {
@@ -180,8 +176,8 @@ function TabbedScrollSection({
                 onClick={() => setActiveTab(i)}
                 className={`px-4 py-1.5 text-xs font-bold rounded-full transition-all ${
                   activeTab === i
-                    ? "bg-foreground text-background"
-                    : "border border-border text-muted-foreground hover:text-foreground hover:border-foreground/40"
+                    ? "bg-primary text-white shadow-sm"
+                    : "border border-border text-muted-foreground hover:text-foreground hover:border-foreground/40 bg-white"
                 }`}
               >
                 {tab}
@@ -193,7 +189,7 @@ function TabbedScrollSection({
         {isLoading ? (
           <div className="flex gap-4 overflow-x-hidden pb-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="w-52 flex-shrink-0 rounded-2xl bg-white/5 animate-pulse h-80" />
+              <div key={i} className="w-52 flex-shrink-0 rounded-2xl bg-secondary animate-pulse h-80" />
             ))}
           </div>
         ) : (
@@ -204,10 +200,10 @@ function TabbedScrollSection({
                 <button
                   onClick={e => {
                     e.preventDefault();
-                    addToCart(p, 1);   // ✅ correct signature
+                    addToCart(p, 1);
                     toast.success("Added to cart");
                   }}
-                  className="absolute bottom-[52px] left-2 right-2 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200 flex items-center justify-center gap-1.5 shadow-xl shadow-primary/20"
+                  className="absolute bottom-[52px] left-2 right-2 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200 flex items-center justify-center gap-1.5 shadow-lg shadow-primary/20"
                 >
                   <ShoppingCart className="w-3.5 h-3.5" />Add to Cart
                 </button>
@@ -220,7 +216,6 @@ function TabbedScrollSection({
   );
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────────
 export default function HomePage() {
   const [heroSlide, setHeroSlide] = useState(0);
   const [testimonialSlide, setTestimonialSlide] = useState(0);
@@ -247,43 +242,44 @@ export default function HomePage() {
   const nextHero = useCallback(() => setHeroSlide(s => (s + 1) % heroSlides.length), [heroSlides.length]);
 
   const { data: saleData,   isLoading: saleLoading }   = useQuery({ queryKey: ["products","sale"],    queryFn: () => productsApi.list({ badge: "SALE",  limit: 12 }) });
-  const { data: newData,    isLoading: newLoading }    = useQuery({ queryKey: ["products","new"],     queryFn: () => productsApi.list({ badge: "NEW",   limit: 12 }) });
-  const { data: laptopData, isLoading: laptopLoading } = useQuery({ queryKey: ["products","laptops"], queryFn: () => productsApi.list({ categorySlug: "laptops", limit: 12 }) });
+  const { data: newData,    isLoading: newLoading }     = useQuery({ queryKey: ["products","new"],     queryFn: () => productsApi.list({ badge: "NEW",   limit: 12 }) });
+  const { data: laptopData, isLoading: laptopLoading }  = useQuery({ queryKey: ["products","laptops"], queryFn: () => productsApi.list({ categorySlug: "laptops", limit: 12 }) });
 
-  const countdown = useCountdown(20);
 
   return (
     <div className="min-h-screen bg-background">
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-[#080810] min-h-[360px] lg:min-h-[420px] flex items-center">
-        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)", backgroundSize: "60px 60px" }} />
-
+      <section className="relative overflow-hidden min-h-[380px] lg:min-h-[440px]">
         {heroSlides.map((s, i) => (
           <div key={s.id} className={`absolute inset-0 transition-opacity duration-1000 ${i === heroSlide ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-            {s.imageUrl && (
-              <img src={s.imageUrl} alt={s.title} className="absolute inset-0 w-full h-full object-cover opacity-30"
-                onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
-            )}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(139,92,246,0.15),transparent_60%)]" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#080810]/90 via-[#080810]/40 to-transparent" />
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full">
-              <div className="max-w-lg">
+            {/* Banner image — full bleed, no overlay */}
+            {s.imageUrl
+              ? <img src={s.imageUrl} alt={s.title} className="absolute inset-0 w-full h-full object-cover"
+                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+              : <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
+            }
+            {/* Left-side text overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+            <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
+              <div className="max-w-lg py-16">
                 {s.subtitle && (
-                  <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-white/8 border border-white/12 backdrop-blur-sm">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                    <span className="text-[11px] font-black tracking-[0.25em] uppercase text-primary">{s.subtitle}</span>
+                  <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                    <span className="text-[11px] font-black tracking-[0.25em] uppercase text-white/90">{s.subtitle}</span>
                   </div>
                 )}
-                <h1 className="text-4xl sm:text-5xl font-black text-white uppercase leading-[0.95] mb-2 tracking-[-0.02em]">{s.title}</h1>
-                <p className="text-xs text-white/50 mb-6 leading-relaxed max-w-sm">Intel Core i9-13980HX · RTX 4090 · 240Hz QHD Display. Engineered for dominance.</p>
+                <h1 className="text-4xl sm:text-5xl font-black text-white uppercase leading-[0.95] mb-3 tracking-[-0.02em] drop-shadow-sm">{s.title}</h1>
+                <p className="text-sm text-white/70 mb-7 leading-relaxed max-w-sm">Intel Core i9-13980HX · RTX 4090 · 240Hz QHD Display. Engineered for dominance.</p>
                 <div className="flex items-center gap-2 flex-wrap">
                   {s.linkUrl && (
-                    <Link href={s.linkUrl} className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-black text-white rounded-full bg-primary hover:bg-primary/90 transition-all hover:scale-[1.02] shadow-2xl shadow-primary/30 uppercase tracking-wide">
+                    <Link href={s.linkUrl}
+                      className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-black text-white rounded-full bg-primary hover:bg-primary/90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30 uppercase tracking-wide">
                       {s.linkLabel ?? "Shop Now"}<ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   )}
-                  <Link href="/products" className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-bold text-white/80 rounded-full border border-white/15 hover:border-white/30 hover:text-white transition-all uppercase tracking-wide">
+                  <Link href="/products"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-bold text-white rounded-full border border-white/30 hover:border-white/60 hover:bg-white/10 transition-all uppercase tracking-wide">
                     Browse All
                   </Link>
                 </div>
@@ -292,33 +288,24 @@ export default function HomePage() {
           </div>
         ))}
 
-        {/* Countdown */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-4 z-10">
-          <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Deal Ends In</p>
-          <div className="flex gap-2">
-            <CountdownDigit value={countdown.h} label="hrs" />
-            <div className="text-white/30 text-xl font-black self-center pb-4">:</div>
-            <CountdownDigit value={countdown.m} label="min" />
-            <div className="text-white/30 text-xl font-black self-center pb-4">:</div>
-            <CountdownDigit value={countdown.s} label="sec" />
-          </div>
-        </div>
-
-        <button onClick={prevHero} className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/8 hover:bg-white/18 text-white flex items-center justify-center transition-all z-10 border border-white/12 backdrop-blur-sm">
+        {/* Arrows */}
+        <button onClick={prevHero} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-all z-10 backdrop-blur-sm border border-white/10">
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <button onClick={nextHero} className="absolute right-4 lg:right-64 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/8 hover:bg-white/18 text-white flex items-center justify-center transition-all z-10 border border-white/12 backdrop-blur-sm">
+        <button onClick={nextHero} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-all z-10 backdrop-blur-sm border border-white/10">
           <ChevronRight className="w-5 h-5" />
         </button>
-        <div className="absolute bottom-6 left-1/2 lg:left-8 -translate-x-1/2 lg:translate-x-0 flex gap-2 z-10">
+
+        {/* Dots */}
+        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           {heroSlides.map((_, i) => (
-            <button key={i} onClick={() => setHeroSlide(i)} className={`h-1.5 rounded-full transition-all duration-500 ${i === heroSlide ? "bg-white w-8" : "bg-white/25 w-2"}`} />
+            <button key={i} onClick={() => setHeroSlide(i)}
+              className={`h-1.5 rounded-full transition-all duration-500 ${i === heroSlide ? "bg-white w-8" : "bg-white/40 w-2"}`} />
           ))}
         </div>
       </section>
-
       {/* ── Trust Badges ──────────────────────────────────────────────────── */}
-      <section className="border-y border-border/40 bg-secondary/20">
+      <section className="border-b border-border/40 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border/40">
             {TRUST_BADGES.map(({ icon: Icon, title, desc }) => (
@@ -337,7 +324,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Category Grid ─────────────────────────────────────────────────── */}
-      <section data-mascot="gaming" className="py-12 border-t border-border/30">
+      <section className="py-12 border-b border-border/30 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-7">
             <div>
@@ -347,8 +334,9 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
             {CATEGORIES.map(({ label, href, icon: Icon, color, accent }) => (
-              <Link key={label} href={href} className={`flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-gradient-to-br border border-white/5 transition-all duration-200 hover:scale-[1.03] hover:shadow-lg group ${color}`}>
-                <div className={`w-10 h-10 rounded-xl bg-black/20 flex items-center justify-center ${accent}`}>
+              <Link key={label} href={href}
+                className={`flex flex-col items-center gap-2.5 p-4 rounded-2xl bg-gradient-to-br border transition-all duration-200 hover:scale-[1.03] hover:shadow-md group ${color}`}>
+                <div className={`w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center shadow-sm ${accent}`}>
                   <Icon className="w-5 h-5" />
                 </div>
                 <span className="text-[11px] font-bold text-foreground/80 group-hover:text-foreground text-center leading-tight">{label}</span>
@@ -358,27 +346,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Flash Sale ────────────────────────────────────────────────────── */}
+      {/* ── Flash Sale — keeps accent color but lighter ────────────────────── */}
       {(saleData?.items?.length ?? 0) > 0 && (
-        <section data-mascot="sale" className="py-10 relative overflow-hidden bg-[#0e0810]">
-          <div className="absolute -left-32 top-1/2 -translate-y-1/2 w-64 h-64 bg-orange-600/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -right-32 top-1/2 -translate-y-1/2 w-64 h-64 bg-red-600/20 rounded-full blur-3xl pointer-events-none" />
+        <section className="py-10 relative overflow-hidden bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800">
+          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)", backgroundSize: "40px 40px" }} />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-7 flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500 to-red-500">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 border border-white/30">
                   <Zap className="w-3.5 h-3.5 text-white fill-white" />
                   <span className="text-xs font-black text-white uppercase tracking-wide">Flash Sale</span>
                 </div>
                 <FlashCountdown />
               </div>
-              <Link href="/products?badge=SALE" className="flex items-center gap-1.5 text-sm font-semibold text-white/60 hover:text-white transition-colors group">
+              <Link href="/products?badge=SALE" className="flex items-center gap-1.5 text-sm font-semibold text-white/80 hover:text-white transition-colors group">
                 View All <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </Link>
             </div>
             <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory" style={{ scrollbarWidth: "none" }}>
               {saleLoading
-                ? Array.from({ length: 5 }).map((_, i) => <div key={i} className="w-52 flex-shrink-0 rounded-2xl bg-white/5 animate-pulse h-80" />)
+                ? Array.from({ length: 5 }).map((_, i) => <div key={i} className="w-52 flex-shrink-0 rounded-2xl bg-white/20 animate-pulse h-80" />)
                 : saleData?.items.map(p => (
                     <div key={p.id} className="w-52 flex-shrink-0 snap-start">
                       <ProductCard product={p} />
@@ -395,12 +382,12 @@ export default function HomePage() {
       <TabbedScrollSection title="Laptops" eyebrow="Portable Power" tabs={["All","Gaming","Business","Student"]} allProducts={laptopData?.items ?? []} isLoading={laptopLoading} mascotKey="laptops" />
 
       {/* ── Brand Marquee ─────────────────────────────────────────────────── */}
-      <section data-mascot="brands" className="py-10 border-y border-border/30 overflow-hidden">
-        <p className="text-center text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground/40 mb-6">Authorised Partners</p>
+      <section className="py-10 border-y border-border/30 overflow-hidden bg-secondary/30">
+        <p className="text-center text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground/60 mb-6">Authorised Partners</p>
         <div className="relative">
           <div className="flex animate-marquee gap-16 whitespace-nowrap">
             {[...BRANDS, ...BRANDS].map((brand, i) => (
-              <span key={i} className="text-base font-black text-muted-foreground/30 hover:text-muted-foreground/70 transition-colors cursor-default tracking-tight shrink-0 select-none">{brand}</span>
+              <span key={i} className="text-base font-black text-muted-foreground/40 hover:text-muted-foreground/80 transition-colors cursor-default tracking-tight shrink-0 select-none">{brand}</span>
             ))}
           </div>
           <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent pointer-events-none" />
@@ -409,29 +396,31 @@ export default function HomePage() {
       </section>
 
       {/* ── Promo Banners ─────────────────────────────────────────────────── */}
-      <section data-mascot="gaming" className="py-12">
+      <section className="py-12 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-4">
-            <Link href="/products?badge=HOT" className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600/20 via-purple-600/10 to-fuchsia-600/20 border border-violet-500/20 p-8 min-h-[200px] flex flex-col justify-end hover:border-violet-500/40 transition-all">
-              <div className="absolute -right-8 -top-8 w-40 h-40 bg-violet-500/10 rounded-full blur-2xl" />
-              <Gamepad2 className="absolute right-6 top-6 w-20 h-20 text-violet-500/20 group-hover:text-violet-500/30 transition-colors" />
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-400/80 mb-2">New Season</p>
+            <Link href="/products?badge=HOT"
+              className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 border border-violet-200/60 p-8 min-h-[200px] flex flex-col justify-end hover:border-violet-400/50 hover:shadow-lg transition-all">
+              <div className="absolute -right-8 -top-8 w-40 h-40 bg-violet-200/40 rounded-full blur-2xl" />
+              <Gamepad2 className="absolute right-6 top-6 w-20 h-20 text-violet-300 group-hover:text-violet-400 transition-colors" />
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-500 mb-2">New Season</p>
               <h3 className="text-2xl font-black text-foreground mb-3">Gaming Collection</h3>
-              <span className="inline-flex items-center gap-1.5 text-sm font-bold text-violet-400 group-hover:gap-2.5 transition-all">Explore <ArrowRight className="w-4 h-4" /></span>
+              <span className="inline-flex items-center gap-1.5 text-sm font-bold text-violet-600 group-hover:gap-2.5 transition-all">Explore <ArrowRight className="w-4 h-4" /></span>
             </Link>
-            <Link href="/products?badge=SALE" className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-600/20 via-orange-600/10 to-red-600/20 border border-amber-500/20 p-8 min-h-[200px] flex flex-col justify-end hover:border-amber-500/40 transition-all">
-              <div className="absolute -right-8 -top-8 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl" />
-              <Tag className="absolute right-6 top-6 w-20 h-20 text-amber-500/20 group-hover:text-amber-500/30 transition-colors" />
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400/80 mb-2">Up to 40% Off</p>
+            <Link href="/products?badge=SALE"
+              className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 border border-amber-200/60 p-8 min-h-[200px] flex flex-col justify-end hover:border-amber-400/50 hover:shadow-lg transition-all">
+              <div className="absolute -right-8 -top-8 w-40 h-40 bg-amber-200/40 rounded-full blur-2xl" />
+              <Tag className="absolute right-6 top-6 w-20 h-20 text-amber-300 group-hover:text-amber-400 transition-colors" />
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-600 mb-2">Up to 40% Off</p>
               <h3 className="text-2xl font-black text-foreground mb-3">Clearance Sale</h3>
-              <span className="inline-flex items-center gap-1.5 text-sm font-bold text-amber-400 group-hover:gap-2.5 transition-all">Shop Deals <ArrowRight className="w-4 h-4" /></span>
+              <span className="inline-flex items-center gap-1.5 text-sm font-bold text-amber-600 group-hover:gap-2.5 transition-all">Shop Deals <ArrowRight className="w-4 h-4" /></span>
             </Link>
           </div>
         </div>
       </section>
 
       {/* ── Testimonials ──────────────────────────────────────────────────── */}
-      <section data-mascot="testimonials" className="py-16 border-t border-border/30 bg-secondary/20">
+      <section className="py-16 border-t border-border/30 bg-secondary/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/80 mb-2">Social Proof</p>
@@ -442,13 +431,13 @@ export default function HomePage() {
               <div
                 key={t.id}
                 onClick={() => setTestimonialSlide(i)}
-                className={`relative p-7 rounded-3xl border transition-all cursor-pointer ${
+                className={`relative p-7 rounded-3xl border transition-all cursor-pointer bg-white ${
                   i === testimonialSlide
-                    ? "border-primary/40 bg-primary/5 shadow-lg shadow-primary/10"
-                    : "border-border/30 bg-secondary/30 hover:border-border"
+                    ? "border-primary/30 shadow-lg shadow-primary/8 ring-1 ring-primary/10"
+                    : "border-border/40 hover:border-border hover:shadow-sm"
                 }`}
               >
-                <div className="absolute top-5 right-6 text-5xl font-black text-border/30 leading-none select-none">"</div>
+                <div className="absolute top-5 right-6 text-5xl font-black text-border/40 leading-none select-none">"</div>
                 <div className="flex gap-0.5 mb-4">
                   {Array.from({ length: 5 }).map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />)}
                 </div>
@@ -467,16 +456,18 @@ export default function HomePage() {
       </section>
 
       {/* ── Newsletter ────────────────────────────────────────────────────── */}
-      <section className="py-16 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/5 pointer-events-none" />
+      <section className="py-16 relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-indigo-50/30 border-t border-border/30">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-black mb-2">Stay Updated</h2>
             <p className="text-sm text-muted-foreground">Get exclusive deals and new product launches delivered to your inbox.</p>
           </div>
           <form className="flex gap-2 max-w-md mx-auto" onSubmit={e => { e.preventDefault(); toast.success("Subscribed!"); }}>
-            <input type="email" placeholder="Enter your email" className="flex-1 px-4 py-3 rounded-xl bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
-            <button type="submit" className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors">Subscribe</button>
+            <input type="email" placeholder="Enter your email"
+              className="flex-1 px-4 py-3 rounded-xl bg-white border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 text-sm" />
+            <button type="submit" className="px-6 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition-colors shadow-sm">
+              Subscribe
+            </button>
           </form>
         </div>
       </section>

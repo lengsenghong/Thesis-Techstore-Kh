@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import {
   Search, ShoppingCart, User, Menu, X, Package,
-  LayoutDashboard, LogOut, ChevronDown, Zap, Heart, Sparkles,
+  LayoutDashboard, LogOut, ChevronDown, Heart, Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
@@ -71,20 +72,26 @@ export function Navbar() {
       <div className="container-wide">
         <div className="flex items-center h-16 gap-6">
 
-          {/* Logo */}
+          {/* ── Logo ─────────────────────────────────────────────────────── */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-lg shadow-blue-500/30">
-              <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
+            <div className="relative w-10 h-10 flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
+              <Image
+                src="/techstore-logo.png"
+                alt="TechStore KH"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
             <div className="hidden sm:block">
               <span className="font-extrabold text-xl tracking-tight text-gray-900">
-                TechStore<span className="text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">KH</span>
+                TechStore<span className="text-blue-600">KH</span>
               </span>
               <p className="text-[10px] text-gray-500 -mt-0.5">Cambodia's Tech Store</p>
             </div>
           </Link>
 
-          {/* Desktop nav */}
+          {/* ── Desktop nav ───────────────────────────────────────────────── */}
           <div className="hidden lg:flex items-center gap-1 ml-4">
             {navLinks.map((link) => {
               const base   = link.href.split("?")[0];
@@ -94,7 +101,7 @@ export function Navbar() {
                 <Link key={link.href} href={link.href}
                   className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     active
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md shadow-blue-500/30"
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/30"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                   }`}>
                   {link.label}
@@ -108,7 +115,7 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Search */}
+          {/* ── Search ───────────────────────────────────────────────────── */}
           <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-auto">
             <div className={`relative w-full transition-all duration-300 ${searchFocused ? "scale-[1.02]" : ""}`}>
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -124,10 +131,10 @@ export function Navbar() {
             </div>
           </form>
 
-          {/* Right actions */}
+          {/* ── Right actions ─────────────────────────────────────────────── */}
           <div className="flex items-center gap-1 ml-auto">
 
-            {/* ── Wishlist ── */}
+            {/* Wishlist */}
             <Link href="/wishlist" aria-label="Wishlist"
               className="relative p-2.5 rounded-xl text-gray-500 hover:text-red-500 hover:bg-red-50 transition-all duration-200 group">
               <Heart
@@ -143,7 +150,7 @@ export function Navbar() {
               )}
             </Link>
 
-            {/* ── Cart ── */}
+            {/* Cart */}
             <Link href="/cart" aria-label="Cart"
               className="relative p-2.5 rounded-xl text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 group">
               <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -154,7 +161,7 @@ export function Navbar() {
               )}
             </Link>
 
-            {/* ── User ── */}
+            {/* User */}
             {isAuthenticated ? (
               <div className="relative ml-0.5" ref={dropdownRef}>
                 <button
@@ -173,8 +180,8 @@ export function Navbar() {
                 <div className={`absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl border border-gray-200 shadow-xl transition-all duration-200 origin-top-right z-50 overflow-hidden ${
                   dropdownOpen ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
                 }`}>
-                  {/* Header */}
-                  <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white">
+                  {/* Dropdown header */}
+                  <div className="bg-blue-600 p-4 text-white">
                     <div className="flex items-center gap-3">
                       <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center text-base font-bold border-2 border-white/30 flex-shrink-0">
                         {user?.name?.charAt(0).toUpperCase() ?? "U"}
@@ -210,7 +217,7 @@ export function Navbar() {
                       <>
                         <div className="border-t border-gray-100 my-2" />
                         <Link href="/admin" onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 hover:from-blue-100 hover:to-purple-100 transition-all">
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all">
                           <LayoutDashboard className="w-4 h-4" />
                           <span className="flex-1">Admin Panel</span>
                           <Sparkles className="w-3.5 h-3.5" />
@@ -236,7 +243,7 @@ export function Navbar() {
                   Sign In
                 </Link>
                 <Link href="/auth/register"
-                  className="px-5 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:shadow-blue-500/40 transition-all hover:scale-105">
+                  className="px-5 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all hover:scale-105">
                   Get Started
                 </Link>
               </div>
@@ -253,7 +260,7 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* ── Mobile menu ───────────────────────────────────────────────── */}
         <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
           mobileOpen ? "max-h-[520px] opacity-100" : "max-h-0 opacity-0"
         }`}>
@@ -270,7 +277,7 @@ export function Navbar() {
                 />
               </div>
               <button type="submit"
-                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold">
+                className="px-4 py-2.5 rounded-xl bg-blue-600 text-white font-semibold">
                 <Search className="w-4 h-4" />
               </button>
             </form>
@@ -285,7 +292,6 @@ export function Navbar() {
               </Link>
             ))}
 
-            {/* Wishlist in mobile nav */}
             <Link href="/wishlist"
               className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:text-red-500 hover:bg-red-50 transition-colors">
               <Heart className={`w-4 h-4 ${wishlistCount > 0 ? "fill-red-500 text-red-500" : ""}`} strokeWidth={wishlistCount > 0 ? 0 : 2} />

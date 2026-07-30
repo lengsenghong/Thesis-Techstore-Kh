@@ -100,6 +100,7 @@ export default function ProductsPage() {
         search: search || undefined,
         categorySlug: categorySlug || undefined,
         badge: badge || undefined,
+        color: color || undefined,
         sortBy,
       }),
   });

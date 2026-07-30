@@ -6,16 +6,19 @@ import Image from "next/image";
 import {
   ShoppingBag, CreditCard, Truck, User, Phone, MapPin, ChevronRight,
   CheckCircle, Loader2, RefreshCw, AlertCircle, Tag, Clock,
+  Upload, ShieldCheck, XCircle,
 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import {
   ordersApi,
+  authApi,
   type CreateOrderResponse,
   type KHQRResponse,
   type CheckPaymentResponse,
 } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "react-hot-toast";
+import type { StudentVerificationStatus } from "@/types";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const FREE_SHIPPING_THRESHOLD = 100;
@@ -23,6 +26,9 @@ const SHIPPING_FEE             = 5;
 const STUDENT_DISCOUNT_PCT     = 5;
 const POLL_INTERVAL_MS         = 3000;
 const POLL_TIMEOUT_MS          = 15 * 60 * 1000;
+
+const STUDENT_CARD_ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+const STUDENT_CARD_MAX_BYTES      = 5 * 1024 * 1024; // 5MB
 
 type Step          = "cart" | "address" | "payment" | "processing" | "success";
 type PaymentMethod = "bakong_khqr" | "cash_on_delivery";
@@ -143,6 +149,14 @@ export default function Checkout() {
   const [note, setNote]                   = useState("");
   const [isLoading, setIsLoading]         = useState(false);
 
+  // ── Student verification state ────────────────────────────────────────────
+  const [studentCardFile, setStudentCardFile]       = useState<File | null>(null);
+  const [studentCardPreview, setStudentCardPreview] = useState<string | null>(null);
+  const [isUploadingCard, setIsUploadingCard]       = useState(false);
+  const [studentCardUrl, setStudentCardUrl]         = useState<string | null>(null);
+  const [verificationStatus, setVerificationStatus] =
+    useState<StudentVerificationStatus>("none");
+
   // ── Order state ─────────────────────────────────────────────────────────────
   const [orderId, setOrderId]             = useState<number | null>(null);
   const [orderNumber, setOrderNumber]     = useState("");
@@ -158,8 +172,14 @@ export default function Checkout() {
   const pollStartRef                = useRef<number>(0);
 
   // ── Price calculations ───────────────────────────────────────────────────────
-  const subtotal      = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const discount      = isStudent ? parseFloat(((subtotal * STUDENT_DISCOUNT_PCT) / 100).toFixed(2)) : 0;
+  const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
+  // The 5% discount only applies once the student's ID has actually been
+  // approved — checking the box alone (or having it "pending") is not enough.
+  const isStudentDiscountActive = isStudent && verificationStatus === "approved";
+  const discount      = isStudentDiscountActive
+    ? parseFloat(((subtotal * STUDENT_DISCOUNT_PCT) / 100).toFixed(2))
+    : 0;
   const afterDiscount = subtotal - discount;
   const shipping      = afterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
   const total         = afterDiscount + shipping;
@@ -170,6 +190,22 @@ export default function Checkout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  // ── Sync student verification state from the logged-in user ─────────────────
+  useEffect(() => {
+    if (user) {
+      setStudentCardUrl(user.studentCardUrl ?? null);
+      setVerificationStatus(user.studentVerificationStatus ?? "none");
+      setIsStudent(user.isStudent ?? false);
+    }
+  }, [user]);
+
+  // ── Clean up object URL preview ──────────────────────────────────────────────
+  useEffect(() => {
+    return () => {
+      if (studentCardPreview) URL.revokeObjectURL(studentCardPreview);
+    };
+  }, [studentCardPreview]);
+
   // ── Stop polling on unmount ──────────────────────────────────────────────────
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
 
@@ -177,6 +213,62 @@ export default function Checkout() {
   useEffect(() => {
     if (items.length === 0 && step === "cart") router.push("/cart");
   }, [items, step, router]);
+
+  // ── Student ID card handlers ─────────────────────────────────────────────────
+  const handleStudentCardSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!STUDENT_CARD_ACCEPTED_TYPES.includes(file.type)) {
+      toast.error("Please upload a JPG, PNG, WEBP, or PDF file");
+      return;
+    }
+    if (file.size > STUDENT_CARD_MAX_BYTES) {
+      toast.error("File must be under 5MB");
+      return;
+    }
+
+    setStudentCardFile(file);
+    setStudentCardPreview(file.type.startsWith("image/") ? URL.createObjectURL(file) : null);
+    // Reset input so re-selecting the same file re-fires onChange
+    e.target.value = "";
+  };
+
+  const clearStudentCardSelection = () => {
+    if (studentCardPreview) URL.revokeObjectURL(studentCardPreview);
+    setStudentCardFile(null);
+    setStudentCardPreview(null);
+  };
+
+  const uploadStudentCard = async () => {
+    if (!studentCardFile) return;
+    setIsUploadingCard(true);
+    try {
+      const formData = new FormData();
+      // Field name must be "file" to match @RequestParam("file") on the
+      // Spring Boot side (same convention as /api/admin/upload-image).
+      formData.append("file", studentCardFile);
+
+      const res = await authApi.uploadStudentCard(formData);
+      setStudentCardUrl(res.studentCardUrl);
+      setVerificationStatus("pending");
+      clearStudentCardSelection();
+      toast.success("Student ID uploaded — pending verification");
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Failed to upload student ID";
+      toast.error(msg);
+    } finally {
+      setIsUploadingCard(false);
+    }
+  };
+
+  // A student who checked the box needs either an approved/pending verification
+  // on file, or a freshly uploaded card, before they can continue.
+  const studentVerificationMissing =
+    isStudent &&
+    verificationStatus !== "approved" &&
+    verificationStatus !== "pending" &&
+    !studentCardUrl;
 
   // ── Bakong polling ───────────────────────────────────────────────────────────
   const startPolling = useCallback((oid: number) => {
@@ -318,7 +410,7 @@ export default function Checkout() {
           <span>Subtotal</span>
           <span>${subtotal.toFixed(2)}</span>
         </div>
-        {discount > 0 && (
+        {isStudentDiscountActive && (
           <div className="flex justify-between text-green-600">
             <span className="flex items-center gap-1"><Tag className="w-3 h-3" /> Student 5%</span>
             <span>-${discount.toFixed(2)}</span>
@@ -342,6 +434,98 @@ export default function Checkout() {
           <span className="text-primary">${total.toFixed(2)}</span>
         </div>
       </div>
+    </div>
+  );
+
+  const renderStudentVerificationBlock = () => (
+    <div className="card-base p-4 space-y-3">
+      <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={isStudent}
+          onChange={(e) => setIsStudent(e.target.checked)}
+          className="rounded border-border"
+        />
+        I am a student (5% discount)
+      </label>
+
+      {isStudent && (
+        <div className="pl-6 space-y-2">
+          {verificationStatus === "approved" ? (
+            <div className="flex items-center gap-1.5 text-xs text-green-600 font-medium">
+              <ShieldCheck className="w-3.5 h-3.5" /> Student status verified
+            </div>
+          ) : verificationStatus === "pending" ? (
+            <div className="flex items-center gap-1.5 text-xs text-amber-600 font-medium">
+              <Clock className="w-3.5 h-3.5" /> Student ID under review — the 5% discount isn't applied to this order yet, but will unlock automatically for future orders once approved
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                {verificationStatus === "rejected"
+                  ? "Your previous student ID was rejected. Upload a new one — the 5% discount will apply once it's approved."
+                  : "Upload your student ID card. The 5% discount applies once it's approved (not on this order if it's still pending)."}
+              </p>
+
+              {!studentCardFile ? (
+                <label className="flex items-center justify-center gap-2 border-2 border-dashed border-border rounded-xl py-4 text-xs text-muted-foreground cursor-pointer hover:border-primary/40 transition-colors">
+                  <Upload className="w-4 h-4" />
+                  Choose file (JPG, PNG, PDF — max 5MB)
+                  <input
+                    type="file"
+                    accept={STUDENT_CARD_ACCEPTED_TYPES.join(",")}
+                    className="hidden"
+                    onChange={handleStudentCardSelect}
+                  />
+                </label>
+              ) : (
+                <div className="flex items-center gap-3 p-2 rounded-xl bg-secondary">
+                  {studentCardPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={studentCardPreview}
+                      alt="Student card preview"
+                      className="w-12 h-12 object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-lg bg-white flex items-center justify-center text-[10px] font-semibold text-muted-foreground border border-border">
+                      PDF
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate">{studentCardFile.name}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {(studentCardFile.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={clearStudentCardSelection}
+                    className="text-muted-foreground hover:text-destructive transition-colors"
+                    aria-label="Remove selected file"
+                  >
+                    <XCircle className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {studentCardFile && (
+                <button
+                  type="button"
+                  onClick={uploadStudentCard}
+                  disabled={isUploadingCard}
+                  className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
+                >
+                  {isUploadingCard
+                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    : <Upload className="w-3.5 h-3.5" />}
+                  {isUploadingCard ? "Uploading..." : "Upload Student ID"}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -394,21 +578,19 @@ export default function Checkout() {
           </div>
           <div className="space-y-4">
             {renderOrderSummary()}
-            <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={isStudent}
-                onChange={(e) => setIsStudent(e.target.checked)}
-                className="rounded border-border"
-              />
-              I am a student (5% discount)
-            </label>
+            {renderStudentVerificationBlock()}
             <button
               onClick={() => setStep("address")}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors"
+              disabled={studentVerificationMissing}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors disabled:opacity-40"
             >
               Continue to Shipping <ChevronRight className="w-4 h-4" />
             </button>
+            {studentVerificationMissing && (
+              <p className="text-[10px] text-center text-muted-foreground -mt-2">
+                Upload your student ID above to continue, or uncheck the student box.
+              </p>
+            )}
           </div>
         </div>
       </div>

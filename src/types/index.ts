@@ -11,17 +11,12 @@ export interface User {
   isStudent:                   boolean;
   loginMethod?:                string;
   studentCardUrl?:             string;
-  // FIX 1: Widened the union to include "none" consistently with the backend
-  // enum (StudentVerificationStatus). The original had the correct values but
-  // the type is now exported as a standalone alias so it can be reused in
-  // admin pages without repeating the literal union.
   studentVerificationStatus?:  StudentVerificationStatus;
   createdAt:                   string;
   updatedAt?:                  string;
   lastSignedIn?:               string;
 }
 
-// FIX 1 (continued): Extracted as a named type alias for reuse.
 export type StudentVerificationStatus = "none" | "pending" | "approved" | "rejected";
 
 // ─── Category ─────────────────────────────────────────────────────────────────
@@ -33,8 +28,6 @@ export interface Category {
   description?: string;
   isActive:     boolean;
   sortOrder:    number;
-  // FIX 2: Added productCount — returned by GET /categories and used in the
-  // admin category table to show how many products belong to each category.
   productCount?: number;
   createdAt?:   string;
   updatedAt?:   string;
@@ -50,7 +43,7 @@ export interface Product {
   price:              number;
   originalPrice?:     number;
   images?: string[];
-  
+
   colors?: string[];
   stock?:             number;
   rating?:            number;
@@ -68,8 +61,6 @@ export interface Product {
   updatedAt?:         string;
 }
 
-// FIX 4 (continued): Named alias preserves literal autocomplete while still
-// accepting arbitrary strings the backend might add in future.
 export type ProductBadge = "new" | "hot" | "sale" | "featured" | (string & {});
 
 // ─── Cart ─────────────────────────────────────────────────────────────────────
@@ -97,39 +88,42 @@ export interface OrderItem {
   productImage?:  string;
   price:          number;
   quantity:       number;
-  subtotal?: number;
+  subtotal?:      number;
   selectedColor?: string;
+  // FIX: cancelReason was incorrectly placed on OrderItem — it's an
+  // order-level field (a single order has one cancellation reason, not
+  // per-item). Moved down to the Order interface where it belongs.
 }
 
 export interface Order {
   id:               number;
-  // FIX 5: Removed orderId — it was documented as "redundant with id" and
-  // having two fields for the same concept causes bugs when code uses orderId
-  // in some places and id in others. The backend's Order entity primary key is
-  // `id`; use that everywhere. If a legacy endpoint still returns `orderId`,
-  // map it to `id` in the API response handler.
-  orderNumber?:     string;
+  // FIX: orderNumber is always present on a created order — the backend
+  // generates it synchronously in OrderService.createOrder() before the
+  // order is ever returned to the client, so there's no real-world case
+  // where an Order exists without one. Making it required removes the
+  // `string | undefined` errors at every call site that passes
+  // order.orderNumber into something expecting `string` (e.g. the cancel
+  // modal heading, copy-to-clipboard, toast messages).
+  orderNumber:      string;
   userId:           number;
   status:           OrderStatus;
   subtotal?:        number;
   discount?:        number;
   shipping?:        number;
   total?:           number;
-  // FIX 6: Removed totalAmount — duplicate of `total`. The backend
-  // CreateOrderResponse uses `total`; the entity also uses `total`.
-  // Having both caused components to read the wrong field silently.
   shippingAddress?: ShippingAddress | Record<string, string>;
   paymentMethod:    PaymentMethod;
   paymentStatus?:   PaymentStatus;
   notes?:           string;
   items?:           OrderItem[];
+  // FIX: cancelReason added here — this is what was missing and causing
+  // "Property 'cancelReason' does not exist on type 'Order'". Optional,
+  // since it's only ever populated once status is "cancelled"/"refunded".
+  cancelReason?:    string;
   createdAt:        string;
   updatedAt?:       string;
 }
 
-// FIX 5 & 6 (continued): Named aliases for the status unions so they can be
-// reused in admin filter dropdowns and status badge components without
-// duplicating the literal lists.
 export type OrderStatus =
   | "pending" | "confirmed" | "processing"
   | "shipped" | "delivered" | "cancelled"
@@ -160,14 +154,7 @@ export interface Review {
   rating:               number;
   title?:               string;
   body?:                string;
-  // FIX 7: Removed `comment` alias. The backend entity field is `body`.
-  // Keeping both caused components to check `review.comment ?? review.body`
-  // everywhere. If an endpoint returns `comment`, normalise it to `body` in
-  // the API layer (api.ts) so the rest of the app only deals with one field.
   isVerifiedPurchase?:  boolean;
-  // FIX 8: Removed `isVerified` — duplicate of `isVerifiedPurchase`. The
-  // backend entity has a single `isVerifiedPurchase` boolean. Having both
-  // caused the admin review table to show inconsistent verified badges.
   isVisible?:           boolean;
   helpfulCount?:        number;
   userName?:            string;
@@ -290,9 +277,6 @@ export interface AdminStats {
 }
 
 // ─── Chat ─────────────────────────────────────────────────────────────────────
-// FIX 9: Added Chat types. These were missing from types.ts even though the
-// chatbot uses them. Centralising them here means ChatBot.tsx can import from
-// @/types instead of declaring its own local interfaces.
 export interface ChatProduct {
   id:            number;
   name:          string;

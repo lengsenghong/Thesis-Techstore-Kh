@@ -44,7 +44,7 @@ export const setToken    = (token: string) =>
 export const getToken    = () => Cookies.get(TOKEN_KEY);
 export const removeToken = () => Cookies.remove(TOKEN_KEY);
 
-// ── Re-export types so consumers can import from one place ────────────────────
+// ── Re-export types ───────────────────────────────────────────────────────────
 
 export type {
   User, Product, Category, Order, Review, Payment,
@@ -76,12 +76,18 @@ export const authApi = {
   logout: (): Promise<void> =>
     api.post("/auth/logout").then(() => undefined),
 
+  updateProfile: (data: { name: string; phone: string; address: string }): Promise<User> =>
+    api.patch("/auth/profile", data).then((r) => r.data),
+
   uploadStudentCard: (formData: FormData): Promise<{ message: string; studentCardUrl: string }> =>
-    api
-      .post("/auth/upload-student-card", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((r) => r.data),
+    api.post("/auth/upload-student-card", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }).then((r) => r.data),
+
+  // Always resolves — backend returns success even if email not found
+  // to prevent email enumeration attacks.
+  forgotPassword: (email: string): Promise<{ message: string }> =>
+    api.post("/auth/forgot-password", { email }).then((r) => r.data),
 };
 
 // ─── Products ─────────────────────────────────────────────────────────────────
@@ -103,11 +109,6 @@ export const productsApi = {
 // ─── Categories ───────────────────────────────────────────────────────────────
 
 export const categoriesApi = {
-  // FIX: removed the erroneous `p0: { limit: number }` parameter — React Query
-  // passes its own context object as the argument to queryFn, which does not
-  // have a `limit` property, causing a TS mismatch. The endpoint takes no
-  // required client-side params; any server-side defaults are handled by the
-  // backend itself.
   list: (): Promise<Category[]> =>
     api.get("/categories").then((r) => r.data),
 };
@@ -152,6 +153,9 @@ export const ordersApi = {
 
   checkPayment: (id: number): Promise<CheckPaymentResponse> =>
     api.get(`/orders/${id}/check-payment`).then((r) => r.data),
+
+  cancel: (id: number, reason?: string): Promise<Order> =>
+    api.post(`/orders/${id}/cancel`, { reason }).then((r) => r.data),
 };
 
 // ─── Reviews ──────────────────────────────────────────────────────────────────
@@ -227,14 +231,7 @@ export const adminApi = {
       api.patch(`/admin/users/${id}/active`, { isActive }).then((r) => r.data),
     listPendingVerification: (): Promise<User[]> =>
       api.get("/admin/users/pending-verification").then((r) => r.data),
-    verifyStudent: (
-      id: number,
-      action: "approve" | "reject"
-    ): Promise<{ id: number; status: string }> =>
-      // FIX 6: verifyStudent was sending `null` as the request body with action
-      // as a query param. Spring Boot's @RequestBody will reject a null body
-      // with HTTP 400. Changed to send action inside the JSON body instead,
-      // which matches the standard @RequestBody pattern on the backend.
+    verifyStudent: (id: number, action: "approve" | "reject"): Promise<{ id: number; status: string }> =>
       api.post(`/admin/users/${id}/verify-student`, { action }).then((r) => r.data),
   },
 
@@ -299,7 +296,6 @@ export async function uploadImage(file: File): Promise<string> {
   return res.data.url;
 }
 
-
 // ─── Banners (public) ─────────────────────────────────────────────────────────
 
 export const bannersApi = {
@@ -309,27 +305,24 @@ export const bannersApi = {
 
 // ─── Chat ─────────────────────────────────────────────────────────────────────
 
-// FIX 7: Added a dedicated chatApi section so the chatbot can be called through
-// the shared `api` instance (with auth headers and the 401 redirect interceptor)
-// instead of a raw fetch(). This also centralises the endpoint in one place.
 export interface ChatMessage {
   role:    "user" | "assistant";
   content: string;
 }
 
 export interface ChatProduct {
-  id:            number;
-  name:          string;
-  price:         number;
+  id:             number;
+  name:           string;
+  price:          number;
   originalPrice?: number;
-  image?:        string;
-  badge?:        string;
-  rating?:       number;
-  slug?:         string;
-  stock?:        number;
-  brand?:        string;
-  category?:     string;
-  specs?:        Record<string, string>;
+  image?:         string;
+  badge?:         string;
+  rating?:        number;
+  slug?:          string;
+  stock?:         number;
+  brand?:         string;
+  category?:      string;
+  specs?:         Record<string, string>;
 }
 
 export interface ChatResponse {
