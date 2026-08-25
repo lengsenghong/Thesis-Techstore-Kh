@@ -23,9 +23,21 @@ export default function ProductCard({ product, showQuickView = true }: Props) {
   const [imgError,    setImgError]    = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  const getImageUrl = (image?: string) => {
+    if (!image) return "/placeholder-product.png";
+
+    // Already a full URL
+    if (image.startsWith("http://") || image.startsWith("https://")) {
+      return image;
+    }
+
+    // Use Next.js rewrite
+    return image.startsWith("/") ? image : `/${image}`;
+  };
+
   const displayImage =
-    !imgError && product.images?.[0]
-      ? product.images[0]
+    !imgError
+      ? getImageUrl(product.images?.[0])
       : "/placeholder-product.png";
 
   const rating          = product.rating ?? product.averageRating ?? 0;
